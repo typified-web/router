@@ -1,0 +1,12 @@
+# node modules
+node_modules/
+
+# vscode settings
+.vscode/
+
+# test coverage files
+coverage/
+.nyc_output/
+
+# dist
+dist/
