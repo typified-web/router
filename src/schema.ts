@@ -1,4 +1,4 @@
-import type { JSONSchema7 } from 'json-schema';
+import type { JSONSchema7, JSONSchema7TypeName } from 'json-schema';
 
 /**
  * The schema definition.
@@ -39,11 +39,11 @@ export function string(opt?: { strict: boolean }): SimpleSchema<string> {
  * @param opt the options.
  * @returns the schema of number
  */
-export function number(opt: { strict: boolean }): SimpleSchema<number> {
+export function number(opt?: { strict: boolean }): SimpleSchema<number> {
   return {
     transform(value) {
       if (typeof value === 'number') return value;
-      if (typeof value === 'string') return parseFloat(value);
+      if (!opt?.strict && typeof value === 'string') return parseFloat(value);
       throw new Error('not a number');
     },
     schema: {
@@ -94,7 +94,7 @@ export function nil(): SimpleSchema<null> {
 
 /**
  * Declare a structure with properties defined.
- * 
+ *
  * @param defn the definition of object.
  * @returns the schema of object.
  */
@@ -123,7 +123,7 @@ export function object<T extends Record<string, unknown>>(defn: {
 
 /**
  * Declare an array with specific type.
- * 
+ *
  * @param defn the definition of array items.
  * @returns the schema of array.
  */
@@ -138,6 +138,37 @@ export function array<T>(defn: SimpleSchema<T>): SimpleSchema<T[]> {
     schema: {
       type: 'array',
       items: defn.schema,
+    },
+  };
+}
+
+type DecodeType<S> = S extends SimpleSchema<infer T> ? DecodeType<T> : S;
+type SumOfArray<arr> = arr extends (infer elements)[] ? elements : never;
+
+export function or<Schemas extends SimpleSchema<unknown>[]>(
+  ...s: Schemas
+): SimpleSchema<DecodeType<SumOfArray<Schemas>>> {
+  return {
+    transform(value) {
+      const result = s.reduce(
+        (ret, i) => {
+          if (!ret.done) {
+            try {
+              ret.result = i.transform(value) as any;
+              ret.done = true;
+            } catch (err) {}
+          }
+          return ret;
+        },
+        { result: null, done: false },
+      );
+      if (!result.done) {
+        throw new Error('cannot transform');
+      }
+      return result.result as any;
+    },
+    schema: {
+      type: s.map((s) => s.schema.type as JSONSchema7TypeName),
     },
   };
 }
