@@ -7,58 +7,64 @@ describe('api-exporter', () => {
     const doc = generateOpenAPI(
       defineRoutes((routes) =>
         routes
-          .route({
-            method: 'GET',
-            path: '/',
-            input: {
-              header: defineSchema((types) =>
-                types.object({
-                  a: types.boolean(),
-                }),
-              ),
-              body: defineSchema((types) => types.boolean()),
-            },
-            output: {
-              header: defineSchema((types) => types.object({})),
-              body: defineSchema((types) => types.string()),
-            },
-            call(ctx) {
-              return {
-                header: {
-                  a: 1,
+          .defineRoute((route) =>
+            route
+              .schema({
+                method: 'GET',
+                path: '/',
+                input: {
+                  header: defineSchema((types) =>
+                    types.object({
+                      a: types.boolean(),
+                    }),
+                  ),
+                  body: defineSchema((types) => types.boolean()),
                 },
-                body: 'a',
-              };
-            },
-          })
-          .route({
-            method: 'POST',
-            path: '/',
-            input: {
-              header: defineSchema((types) =>
-                types.object({
-                  a: types.nil(),
-                }),
-              ),
-              body: defineSchema((types) => types.boolean()),
-            },
-            output: {
-              header: defineSchema((types) =>
-                types.object({
-                  a: types.string(),
-                }),
-              ),
-              body: defineSchema((types) => types.string()),
-            },
-            call(ctx) {
-              return {
-                header: {
-                  a: 'a',
+                output: {
+                  header: defineSchema((types) => types.object({})),
+                  body: defineSchema((types) => types.string()),
                 },
-                body: 'a',
-              };
-            },
-          }),
+              })
+              .call((ctx) => {
+                return {
+                  header: {
+                    a: 1,
+                  },
+                  body: 'a',
+                };
+              }),
+          )
+          .defineRoute((route) =>
+            route
+              .schema({
+                method: 'POST',
+                path: '/',
+                input: {
+                  header: defineSchema((types) =>
+                    types.object({
+                      a: types.nil(),
+                    }),
+                  ),
+                  body: defineSchema((types) => types.boolean()),
+                },
+                output: {
+                  header: defineSchema((types) =>
+                    types.object({
+                      a: types.string(),
+                    }),
+                  ),
+                  body: defineSchema((types) => types.string()),
+                },
+              })
+              .call((ctx) => {
+                return {
+                  header: {
+                    a: 'a',
+                  },
+                  body: 'a',
+                };
+              }),
+          ),
       ),
     );
     assert.deepEqual(

@@ -9,31 +9,34 @@ describe('koa-router', function () {
     this.timeout(200);
     const app = new Koa();
     app.use(
-      defineRouter((definer) => {
-        definer.route({
-          method: 'GET',
-          path: '/',
-          input: {
-            header: defineSchema((types) => types.object({})),
-            body: defineSchema((types) => types.nil()),
-          },
-          output: {
-            header: defineSchema((types) =>
-              types.object({
-                server: types.string(),
-              }),
-            ),
-            body: defineSchema((types) => types.string()),
-          },
-          call(ctx) {
-            return {
-              header: {
-                server: 'koa',
+      defineRouter((routes) => {
+        routes.defineRoute((route) =>
+          route
+            .schema({
+              method: 'GET',
+              path: '/',
+              input: {
+                header: defineSchema((types) => types.object({})),
+                body: defineSchema((types) => types.nil()),
               },
-              body: 'hello',
-            };
-          },
-        });
+              output: {
+                header: defineSchema((types) =>
+                  types.object({
+                    server: types.string(),
+                  }),
+                ),
+                body: defineSchema((types) => types.string()),
+              },
+            })
+            .call((ctx) => {
+              return {
+                header: {
+                  server: 'koa',
+                },
+                body: 'hello',
+              };
+            }),
+        );
       }).middleware(),
     );
     const server = app.listen(9420);
@@ -49,6 +52,6 @@ describe('koa-router', function () {
           done();
         });
       });
-    })
+    });
   });
 });

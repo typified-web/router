@@ -5,58 +5,66 @@ describe('RouteBuilder', () => {
   it('should throw no declaration errors', () => {
     const routes = defineRoutes((routes) =>
       routes
-        .route({
-          method: 'GET',
-          path: '/',
-          input: {
-            header: defineSchema((types) =>
-              types.object({
-                a: types.boolean(),
-              }),
-            ),
-            body: defineSchema((types) => types.boolean()),
-          },
-          output: {
-            header: defineSchema((types) => types.object({})),
-            body: defineSchema((types) => types.string()),
-          },
-          call(ctx) {
-            return {
-              header: {
-                a: 1,
+        .defineRoute((route) =>
+          route
+            .schema({
+              method: 'GET',
+              path: '/',
+              input: {
+                header: defineSchema((types) =>
+                  types.object({
+                    a: types.boolean(),
+                  }),
+                ),
+                body: defineSchema((types) => types.boolean()),
               },
-              body: 'a',
-            };
-          },
-        })
-        .route({
-          method: 'GET',
-          path: '/',
-          input: {
-            header: defineSchema((types) =>
-              types.object({
-                a: types.nil(),
-              }),
-            ),
-            body: defineSchema((types) => types.boolean()),
-          },
-          output: {
-            header: defineSchema((types) =>
-              types.object({
-                a: types.string(),
-              }),
-            ),
-            body: defineSchema((types) => types.string()),
-          },
-          call(ctx) {
-            return {
-              header: {
-                a: 'a',
+              output: {
+                header: defineSchema((types) => types.object({})),
+                body: defineSchema((types) => types.string()),
               },
-              body: 'a',
-            };
-          },
-        }),
+            })
+            .call((ctx) => {
+              return {
+                header: {
+                  a: 1,
+                },
+                body: 's',
+              };
+            }),
+        )
+        .defineRoute((route) =>
+          route
+            .schema({
+              method: 'GET',
+              path: '/',
+              input: {
+                header: defineSchema((types) =>
+                  types.object({
+                    a: types.boolean(),
+                  }),
+                ),
+                body: defineSchema((types) => types.string()),
+              },
+              output: {
+                header: defineSchema((types) => types.object({})),
+                body: defineSchema((types) =>
+                  types.object({
+                    a: types.string(),
+                  }),
+                ),
+              },
+            })
+            .call((ctx) => {
+              return {
+                header: {
+                  a: 1,
+                },
+                body: {
+                  a: 'hack',
+                },
+              };
+            }),
+        ),
     ).getRoutes();
     assert.equal(2, routes.length);
   });
