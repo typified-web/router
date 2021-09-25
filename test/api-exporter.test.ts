@@ -61,7 +61,26 @@ describe('api-exporter', () => {
           }),
       ),
     );
-    assert.equal(doc.openapi, '3.0.0');
-    assert.equal(Object.keys(doc.paths['/']).length, 2);
+    assert.deepEqual(
+      {
+        openapi: '3.0.0',
+        info: { title: 'Sample', version: '0.0.1' },
+        paths: {
+          '/': {
+            GET: {
+              summary: 'sample path',
+              requestBody: { content: { 'application/json': { schema: { type: 'boolean' } } } },
+              responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } },
+            },
+            POST: {
+              summary: 'sample path',
+              requestBody: { content: { 'application/json': { schema: { type: 'boolean' } } } },
+              responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } },
+            },
+          },
+        },
+      },
+      doc,
+    );
   });
 });

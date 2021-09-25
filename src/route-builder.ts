@@ -35,7 +35,7 @@ export interface Route<
 /**
  * The internal type-safe route builder.
  */
-class RouteBuilder {
+class RouterBuilder {
   private routes: Array<
     Route<unknown, Record<string, unknown>, any, Record<string, unknown>, unknown, Record<string, unknown>>
   > = [];
@@ -48,7 +48,7 @@ class RouteBuilder {
    */
   route<I, IH extends Record<string, unknown>, O, OH extends Record<string, unknown>, AO extends O, AOH extends OH>(
     route: Route<I, IH, O, OH, AO, AOH>,
-  ): RouteBuilder {
+  ): RouterBuilder {
     this.routes.push(route);
     return this;
   }
@@ -78,10 +78,10 @@ export function defineSchema<T>(cb: (types: typeof schema) => schema.SimpleSchem
 /**
  * The interface to help build routes with type-safety.
  */
-export interface RouteDefiner {
+export interface RouterDefiner {
   route<I, IH extends Record<string, unknown>, O, OH extends Record<string, unknown>, AO extends O, AOH extends OH>(
     route: Route<I, IH, O, OH, AO, AOH>,
-  ): RouteDefiner;
+  ): RouterDefiner;
 }
 
 /**
@@ -99,8 +99,8 @@ export interface RouteContainer {
  * @param cb the callback to define routes.
  * @returns the container.
  */
-export function defineRoutes(cb: (definer: RouteDefiner) => void): RouteContainer {
-  const builder = new RouteBuilder();
+export function defineRoutes(cb: (definer: RouterDefiner) => void): RouteContainer {
+  const builder = new RouterBuilder();
   cb(builder);
   return builder;
 }

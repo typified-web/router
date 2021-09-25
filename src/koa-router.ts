@@ -1,7 +1,7 @@
 import KoaRouter from '@koa/router';
-import { defineRoutes, RouteDefiner } from './route-builder';
+import { defineRoutes, RouterDefiner } from './route-builder';
 
-export interface RouterDefiner extends RouteDefiner {}
+export type { RouterDefiner };
 
 export function defineRouter(cb: (definer: RouterDefiner) => void) {
   const router = new KoaRouter();
