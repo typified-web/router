@@ -172,3 +172,17 @@ export function or<Schemas extends SimpleSchema<unknown>[]>(
     },
   };
 }
+
+export function literal<T extends string | number>(defn: T): SimpleSchema<T> {
+  return {
+    transform(value) {
+      if (value !== defn) {
+        throw new Error('not equal to the given literal form');
+      }
+      return value as T;
+    },
+    schema: {
+      type: typeof defn === 'string' ? 'string' : typeof defn === 'number' ? 'number' : 'null',
+    },
+  };
+}
