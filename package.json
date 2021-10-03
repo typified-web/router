@@ -1,17 +1,27 @@
 {
-  "name": "api-router",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@typified-web/router",
+  "version": "0.0.1-alpha.1",
+  "description": "A type-safe wrapper over koa router with focus on maintenance and consistence.",
   "scripts": {
     "build": "tsc",
     "test": "mocha",
     "coverage": "c8 --reporter=lcov npm run test",
     "lint": "eslint --fix src/**/*.ts"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "typescript",
+    "koa",
+    "router"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/typified-web/request.git"
+  },
+  "author": "Zhi <yfwz100@yeah.net>",
   "license": "ISC",
+  "dependencies": {
+    "@koa/router": "^10.1.1"
+  },
   "devDependencies": {
     "@types/json-schema": "^7.0.9",
     "@types/koa": "^2.13.4",
@@ -27,8 +37,5 @@
     "prettier": "^2.4.0",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3"
-  },
-  "dependencies": {
-    "@koa/router": "^10.1.1"
   }
 }
