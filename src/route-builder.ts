@@ -1,11 +1,11 @@
-import * as schema from './schema';
+import { Output, OutputSchema } from './schema/output';
+import { Schema } from './schema/general';
+import * as schema from './schema/types';
 
 /**
  * The supported HTTP methods.
  */
 export type Method = 'GET' | 'PUT' | 'POST' | 'PATCH' | 'DELETE' | 'OPTIONS';
-
-type Output = { status: number; header?: Record<string, unknown>; body: unknown };
 
 /**
  * The route definition.
@@ -14,10 +14,10 @@ export interface Route<I, IH extends Record<string, unknown>, O extends Output> 
   method?: Method | Method[];
   path: string;
   input: {
-    header: schema.Schema<IH>;
-    body: schema.Schema<I>;
+    header: Schema<IH>;
+    body: Schema<I>;
   };
-  output: schema.Schema<O, schema.Responses>;
+  output: OutputSchema<O>;
   call(ctx: { header: IH; body: I }): O;
 }
 
@@ -27,9 +27,7 @@ export interface Route<I, IH extends Record<string, unknown>, O extends Output> 
 class RouterBuilder {
   private routes: Array<Route<unknown, Record<string, unknown>, Output>> = [];
 
-  route<I, IH extends Record<string, unknown>, O extends Output>(
-    route: Route<I, IH, O>,
-  ): RouterBuilder {
+  route<I, IH extends Record<string, unknown>, O extends Output>(route: Route<I, IH, O>): RouterBuilder {
     this.routes.push(route);
     return this;
   }
@@ -63,10 +61,10 @@ class RouteDefiner {
     method?: Method | Method[];
     path: string;
     input: {
-      header: schema.Schema<IH>;
-      body: schema.Schema<I>;
+      header: Schema<IH>;
+      body: Schema<I>;
     };
-    output: schema.Schema<O, schema.Responses>;
+    output: OutputSchema<O>;
   }) {
     return new RouteBuilder(this.builder, schema);
   }
@@ -79,16 +77,14 @@ class RouteBuilder<I, IH extends Record<string, unknown>, O extends Output> {
       method?: Method | Method[];
       path: string;
       input: {
-        header: schema.Schema<IH>;
-        body: schema.Schema<I>;
+        header: Schema<IH>;
+        body: Schema<I>;
       };
-      output: schema.Schema<O, schema.Responses>;
+      output: OutputSchema<O>;
     },
   ) {}
 
-  call(
-    call: (ctx: { header: IH; body: I }) => O,
-  ) {
+  call(call: (ctx: { header: IH; body: I }) => O) {
     this.routerBuilder.route({
       ...this.schema,
       call,
@@ -102,7 +98,7 @@ class RouteBuilder<I, IH extends Record<string, unknown>, O extends Output> {
  * @param cb the callback to define the schemas.
  * @returns the schema.
  */
-export function defineSchema<T, Def>(cb: (types: typeof schema) => schema.Schema<T, Def>): schema.Schema<T, Def> {
+export function defineSchema<T, Def>(cb: (types: typeof schema) => Schema<T, Def>): Schema<T, Def> {
   return cb(schema);
 }
 

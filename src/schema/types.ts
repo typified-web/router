@@ -1,12 +1,6 @@
+import type { Schema } from './general';
 import type { JSONSchema7, JSONSchema7TypeName } from 'json-schema';
-
-/**
- * The schema definition.
- */
-export interface Schema<T, SchemaDef = JSONSchema7> {
-  transform(value: unknown): T;
-  schema: SchemaDef;
-}
+import { DecodeType, literalTransform, SumOfArray, unionTransform } from './util';
 
 /**
  * Declare a string schema.
@@ -145,42 +139,12 @@ export function array<T>(defn: Schema<T>): Schema<T[]> {
 export function literal<T extends string | number>(defn: T): Schema<T> {
   return {
     transform(value) {
-      if (value !== defn) {
-        throw new Error('not equal to the given literal form');
-      }
-      return value as T;
+      return literalTransform(value, defn);
     },
     schema: {
       type: typeof defn === 'string' ? 'string' : typeof defn === 'number' ? 'number' : 'null',
     },
   };
-}
-
-type DecodeType<S> = S extends Schema<infer T, unknown> ? DecodeType<T> : S;
-type SumOfArray<arr> = arr extends (infer elements)[] ? elements : never;
-
-function unionTransform<Schemas extends Schema<unknown, unknown>[]>(
-  value: unknown,
-  ...s: Schemas
-): DecodeType<SumOfArray<Schemas>> {
-  const result = s.reduce(
-    (ret, i) => {
-      if (!ret.done) {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ret.result = i.transform(value) as any;
-          ret.done = true;
-        } catch (err) {}
-      }
-      return ret;
-    },
-    { result: null, done: false },
-  );
-  if (!result.done) {
-    throw new Error('cannot transform');
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return result.result as any;
 }
 
 export function union<Schemas extends Schema<unknown>[]>(...s: Schemas): Schema<DecodeType<SumOfArray<Schemas>>> {
@@ -194,59 +158,4 @@ export function union<Schemas extends Schema<unknown>[]>(...s: Schemas): Schema<
   };
 }
 
-export type Responses = {
-  [k: number]: {
-    content: {
-      'application/json': {
-        schema: JSONSchema7;
-      };
-    };
-  };
-};
-
-export function output<S extends number, H extends Record<string, unknown>, B>(defn: {
-  status: S;
-  header: Schema<H>;
-  body: Schema<B>;
-}): Schema<{ status: S; header?: H; body: B }, Responses> {
-  return {
-    transform(value) {
-      if (typeof value !== 'object') throw new Error('not an object');
-      if (!value) throw new Error('null object');
-      const obj = value as Record<string, unknown>;
-      return {
-        status: literal(defn.status).transform(obj['status']),
-        header: defn.header?.transform(obj['header']),
-        body: defn.body.transform(obj['body']),
-      };
-    },
-    schema: {
-      [defn.status]: {
-        content: {
-          'application/json': {
-            schema: defn.body.schema,
-          },
-        },
-      },
-    },
-  };
-}
-
-export namespace output {
-  export function union<Schemas extends Schema<unknown, Responses>[]>(
-    ...s: Schemas
-  ): Schema<DecodeType<SumOfArray<Schemas>>, Responses> {
-    return {
-      transform(value) {
-        return unionTransform(value, ...s);
-      },
-      schema: s.reduce(
-        (schema, defn) => ({
-          ...defn.schema,
-          ...schema,
-        }),
-        {},
-      ),
-    };
-  }
-}
+export { output } from './output';
