@@ -5,34 +5,30 @@ import * as schema from './schema';
  */
 export type Method = 'GET' | 'PUT' | 'POST' | 'PATCH' | 'DELETE' | 'OPTIONS';
 
+type Output = { status: number; header?: Record<string, unknown>; body: unknown };
+
 /**
  * The route definition.
  */
-export interface Route<I, IH extends Record<string, unknown>, O, OH extends Record<string, unknown>> {
+export interface Route<I, IH extends Record<string, unknown>, O extends Output> {
   method?: Method | Method[];
   path: string;
   input: {
-    header: schema.SimpleSchema<IH>;
-    body: schema.SimpleSchema<I>;
+    header: schema.Schema<IH>;
+    body: schema.Schema<I>;
   };
-  output: {
-    header: schema.SimpleSchema<OH>;
-    body: schema.SimpleSchema<O>;
-  };
-  call(ctx: { header: IH; body: I }): {
-    header: OH;
-    body: O;
-  };
+  output: schema.Schema<O, schema.Responses>;
+  call(ctx: { header: IH; body: I }): O;
 }
 
 /**
  * The internal type-safe route builder.
  */
 class RouterBuilder {
-  private routes: Array<Route<unknown, Record<string, unknown>, any, Record<string, unknown>>> = [];
+  private routes: Array<Route<unknown, Record<string, unknown>, Output>> = [];
 
-  route<I, IH extends Record<string, unknown>, O, OH extends Record<string, unknown>>(
-    route: Route<I, IH, O, OH>,
+  route<I, IH extends Record<string, unknown>, O extends Output>(
+    route: Route<I, IH, O>,
   ): RouterBuilder {
     this.routes.push(route);
     return this;
@@ -55,7 +51,7 @@ class RouterBuilder {
    *
    * @returns the added routes.
    */
-  getRoutes(): Array<Route<unknown, Record<string, unknown>, any, Record<string, unknown>>> {
+  getRoutes(): Array<Route<unknown, Record<string, unknown>, Output>> {
     return this.routes;
   }
 }
@@ -63,44 +59,35 @@ class RouterBuilder {
 class RouteDefiner {
   constructor(private readonly builder: RouterBuilder) {}
 
-  schema<I, IH extends Record<string, unknown>, O, OH extends Record<string, unknown>>(schema: {
+  schema<I, IH extends Record<string, unknown>, O extends Output>(schema: {
     method?: Method | Method[];
     path: string;
     input: {
-      header: schema.SimpleSchema<IH>;
-      body: schema.SimpleSchema<I>;
+      header: schema.Schema<IH>;
+      body: schema.Schema<I>;
     };
-    output: {
-      header: schema.SimpleSchema<OH>;
-      body: schema.SimpleSchema<O>;
-    };
+    output: schema.Schema<O, schema.Responses>;
   }) {
     return new RouteBuilder(this.builder, schema);
   }
 }
 
-class RouteBuilder<I, IH extends Record<string, unknown>, O, OH extends Record<string, unknown>> {
+class RouteBuilder<I, IH extends Record<string, unknown>, O extends Output> {
   constructor(
     private readonly routerBuilder: RouterBuilder,
     private readonly schema: {
       method?: Method | Method[];
       path: string;
       input: {
-        header: schema.SimpleSchema<IH>;
-        body: schema.SimpleSchema<I>;
+        header: schema.Schema<IH>;
+        body: schema.Schema<I>;
       };
-      output: {
-        header: schema.SimpleSchema<OH>;
-        body: schema.SimpleSchema<O>;
-      };
+      output: schema.Schema<O, schema.Responses>;
     },
   ) {}
 
   call(
-    call: (ctx: { header: IH; body: I }) => {
-      header: OH;
-      body: O;
-    },
+    call: (ctx: { header: IH; body: I }) => O,
   ) {
     this.routerBuilder.route({
       ...this.schema,
@@ -115,7 +102,7 @@ class RouteBuilder<I, IH extends Record<string, unknown>, O, OH extends Record<s
  * @param cb the callback to define the schemas.
  * @returns the schema.
  */
-export function defineSchema<T>(cb: (types: typeof schema) => schema.SimpleSchema<T>): schema.SimpleSchema<T> {
+export function defineSchema<T, Def>(cb: (types: typeof schema) => schema.Schema<T, Def>): schema.Schema<T, Def> {
   return cb(schema);
 }
 
@@ -136,7 +123,7 @@ export interface RouterDefiner {
  * The interface to help get the routes.
  */
 export interface RouteContainer {
-  getRoutes(): Array<Route<unknown, Record<string, unknown>, any, Record<string, unknown>>>;
+  getRoutes(): Array<Route<unknown, Record<string, unknown>, Output>>;
 }
 
 /**

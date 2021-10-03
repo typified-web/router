@@ -20,13 +20,28 @@ describe('api-exporter', () => {
                   ),
                   body: defineSchema((types) => types.boolean()),
                 },
-                output: {
-                  header: defineSchema((types) => types.object({})),
-                  body: defineSchema((types) => types.string()),
-                },
+                output: defineSchema((types) =>
+                  types.output.union(
+                    types.output({
+                      status: 200,
+                      header: types.object({
+                        a: types.number(),
+                      }),
+                      body: types.string(),
+                    }),
+                    types.output({
+                      status: 400,
+                      header: types.object({
+                        a: types.number(),
+                      }),
+                      body: types.number(),
+                    }),
+                  ),
+                ),
               })
               .call((ctx) => {
                 return {
+                  status: 200,
                   header: {
                     a: 1,
                   },
@@ -47,17 +62,19 @@ describe('api-exporter', () => {
                   ),
                   body: defineSchema((types) => types.boolean()),
                 },
-                output: {
-                  header: defineSchema((types) =>
-                    types.object({
+                output: defineSchema((types) =>
+                  types.output({
+                    status: 200,
+                    header: types.object({
                       a: types.string(),
                     }),
-                  ),
-                  body: defineSchema((types) => types.string()),
-                },
+                    body: types.string(),
+                  }),
+                ),
               })
               .call((ctx) => {
                 return {
+                  status: 200,
                   header: {
                     a: 'a',
                   },
@@ -76,12 +93,17 @@ describe('api-exporter', () => {
             GET: {
               summary: 'sample path',
               requestBody: { content: { 'application/json': { schema: { type: 'boolean' } } } },
-              responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } },
+              responses: {
+                '200': { content: { 'application/json': { schema: { type: 'string' } } } },
+                '400': { content: { 'application/json': { schema: { type: 'number' } } } },
+              },
             },
             POST: {
               summary: 'sample path',
               requestBody: { content: { 'application/json': { schema: { type: 'boolean' } } } },
-              responses: { '200': { content: { 'application/json': { schema: { type: 'string' } } } } },
+              responses: {
+                '200': { content: { 'application/json': { schema: { type: 'string' } } } },
+              },
             },
           },
         },

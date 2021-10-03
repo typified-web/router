@@ -18,13 +18,17 @@ describe('RouteBuilder', () => {
                 ),
                 body: defineSchema((types) => types.boolean()),
               },
-              output: {
-                header: defineSchema((types) => types.object({})),
-                body: defineSchema((types) => types.string()),
-              },
+              output: defineSchema((types) =>
+                types.output({
+                  status: 200,
+                  header: types.object({}),
+                  body: types.string(),
+                }),
+              ),
             })
             .call((ctx) => {
               return {
+                status: 200,
                 header: {
                   a: 1,
                 },
@@ -45,20 +49,20 @@ describe('RouteBuilder', () => {
                 ),
                 body: defineSchema((types) => types.string()),
               },
-              output: {
-                header: defineSchema((types) => types.object({})),
-                body: defineSchema((types) =>
-                  types.object({
+              output: defineSchema((types) =>
+                types.output({
+                  status: 200,
+                  header: types.object({}),
+                  body: types.object({
                     a: types.string(),
                   }),
-                ),
-              },
+                }),
+              ),
             })
             .call((ctx) => {
               return {
-                header: {
-                  a: 1,
-                },
+                status: 200,
+                header: {},
                 body: {
                   a: 'hack',
                 },

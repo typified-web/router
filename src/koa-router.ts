@@ -13,11 +13,14 @@ export function defineRouter(cb: (definer: RouterDefiner) => void) {
           header: r.input.header.transform(ctx.header),
           body: r.input.body.transform(ctx.body),
         };
-        const result = r.call(routeCtx);
-        Object.entries(r.output.header.transform(result.header)).forEach(([k, v]) => {
-          ctx.set(k, `${v}`);
-        });
-        ctx.body = r.output.body.transform(result.body);
+        const { status, header, body } = r.output.transform(r.call(routeCtx));
+        ctx.status = status;
+        if (header) {
+          Object.entries(header).forEach(([k, v]) => {
+            ctx.set(k, `${v}`);
+          });
+        }
+        ctx.body = body;
       });
     });
   return router;

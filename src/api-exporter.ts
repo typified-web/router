@@ -26,15 +26,7 @@ export function generateOpenAPI(routes: RouteContainer): OpenAPIObject {
               },
             },
           },
-          responses: {
-            200: {
-              content: {
-                'application/json': {
-                  schema: r.output.body.schema,
-                },
-              },
-            },
-          },
+          responses: r.output.schema,
         };
       });
       return paths;

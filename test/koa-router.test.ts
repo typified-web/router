@@ -19,17 +19,17 @@ describe('koa-router', function () {
                 header: defineSchema((types) => types.object({})),
                 body: defineSchema((types) => types.nil()),
               },
-              output: {
-                header: defineSchema((types) =>
-                  types.object({
-                    server: types.string(),
-                  }),
-                ),
-                body: defineSchema((types) => types.string()),
-              },
+              output: defineSchema((types) => types.output({
+                status: 200,
+                header: types.object({
+                  server: types.string(),
+                }),
+                body: types.string(),
+              }))
             })
             .call((ctx) => {
               return {
+                status: 200,
                 header: {
                   server: 'koa',
                 },
