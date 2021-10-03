@@ -3,7 +3,7 @@ import { defineRoutes, RouterDefiner } from './route-builder';
 
 export type { RouterDefiner };
 
-export function defineRouter(cb: (definer: RouterDefiner) => void) {
+export function defineRouter(cb: (definer: RouterDefiner) => void): KoaRouter {
   const router = new KoaRouter();
   defineRoutes(cb)
     .getRoutes()

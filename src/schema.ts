@@ -159,25 +159,34 @@ export function literal<T extends string | number>(defn: T): Schema<T> {
 type DecodeType<S> = S extends Schema<infer T, unknown> ? DecodeType<T> : S;
 type SumOfArray<arr> = arr extends (infer elements)[] ? elements : never;
 
+function unionTransform<Schemas extends Schema<unknown, unknown>[]>(
+  value: unknown,
+  ...s: Schemas
+): DecodeType<SumOfArray<Schemas>> {
+  const result = s.reduce(
+    (ret, i) => {
+      if (!ret.done) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ret.result = i.transform(value) as any;
+          ret.done = true;
+        } catch (err) {}
+      }
+      return ret;
+    },
+    { result: null, done: false },
+  );
+  if (!result.done) {
+    throw new Error('cannot transform');
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return result.result as any;
+}
+
 export function union<Schemas extends Schema<unknown>[]>(...s: Schemas): Schema<DecodeType<SumOfArray<Schemas>>> {
   return {
     transform(value) {
-      const result = s.reduce(
-        (ret, i) => {
-          if (!ret.done) {
-            try {
-              ret.result = i.transform(value) as any;
-              ret.done = true;
-            } catch (err) {}
-          }
-          return ret;
-        },
-        { result: null, done: false },
-      );
-      if (!result.done) {
-        throw new Error('cannot transform');
-      }
-      return result.result as any;
+      return unionTransform(value, ...s);
     },
     schema: {
       type: s.map((s) => s.schema.type as JSONSchema7TypeName),
@@ -229,22 +238,7 @@ export namespace output {
   ): Schema<DecodeType<SumOfArray<Schemas>>, Responses> {
     return {
       transform(value) {
-        const result = s.reduce(
-          (ret, i) => {
-            if (!ret.done) {
-              try {
-                ret.result = i.transform(value) as any;
-                ret.done = true;
-              } catch (err) {}
-            }
-            return ret;
-          },
-          { result: null, done: false },
-        );
-        if (!result.done) {
-          throw new Error('cannot transform');
-        }
-        return result.result as any;
+        return unionTransform(value, ...s);
       },
       schema: s.reduce(
         (schema, defn) => ({
