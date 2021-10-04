@@ -2,7 +2,11 @@ import type { JSONSchema7 } from 'json-schema';
 import type { Schema } from './general';
 import { DecodeType, literalTransform, SumOfArray, unionTransform } from './util';
 
-export type Output = { status: number; header: Record<string, unknown>; body: unknown };
+export type Output<
+  S extends number = number,
+  H extends Record<string, unknown> = Record<string, unknown>,
+  B = unknown,
+> = { status: S; header: H; body: B };
 
 type Responses = {
   [k: number]: {
@@ -20,7 +24,7 @@ export function output<S extends number, H extends Record<string, unknown>, B>(d
   status: S;
   header: Schema<H>;
   body: Schema<B>;
-}): OutputSchema<Output> {
+}): OutputSchema<Output<S, H, B>> {
   return {
     transform(value) {
       if (typeof value !== 'object') throw new Error('not an object');
@@ -45,9 +49,9 @@ export function output<S extends number, H extends Record<string, unknown>, B>(d
 }
 
 export namespace output {
-  export function union<Schemas extends Schema<unknown, Responses>[]>(
+  export function union<Schemas extends OutputSchema<Output>[]>(
     ...s: Schemas
-  ): Schema<DecodeType<SumOfArray<Schemas>>, Responses> {
+  ): OutputSchema<DecodeType<SumOfArray<Schemas>>> {
     return {
       transform(value) {
         return unionTransform(value, ...s);

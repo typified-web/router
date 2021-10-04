@@ -157,5 +157,3 @@ export function union<Schemas extends Schema<unknown>[]>(...s: Schemas): Schema<
     },
   };
 }
-
-export { output } from './output';

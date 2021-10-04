@@ -1,33 +1,32 @@
 import Koa from 'koa';
 import http from 'http';
 import assert from 'assert';
-import { defineRouter } from '../src/koa-router';
-import { defineSchema } from '../src/route-builder';
+import { defineMiddleware } from '../src/middleware';
+import { defineRouter } from '../src/router';
 
 describe('koa-router', function () {
   it('should greet without errors', function (done) {
     this.timeout(200);
     const app = new Koa();
     app.use(
-      defineRouter((routes) => {
-        routes.defineRoute((route) =>
-          route
-            .schema({
+      defineMiddleware(
+        defineRouter((define) => ({
+          routes: [
+            define.route({
               method: 'GET',
               path: '/',
-              input: {
-                header: defineSchema((types) => types.object({})),
-                body: defineSchema((types) => types.nil()),
-              },
-              output: defineSchema((types) => types.output({
+              input: define.input((types) => ({
+                header: types.object({}),
+                body: types.nil(),
+              })),
+              output: define.output((types) => ({
                 status: 200,
                 header: types.object({
                   server: types.string(),
                 }),
                 body: types.string(),
-              }))
-            })
-            .call((ctx) => {
+              })),
+            })(() => {
               return {
                 status: 200,
                 header: {
@@ -36,19 +35,21 @@ describe('koa-router', function () {
                 body: 'hello',
               };
             }),
-        );
-      }).middleware(),
+          ],
+        })),
+      ),
     );
-    const server = app.listen(9420);
+    const port = 9420;
+    const server = app.listen(port);
     setTimeout(() => {
-      http.get('http://localhost:9420', (res) => {
+      http.get(`http://localhost:${port}/`, (res) => {
         let rawData = '';
         res.on('data', (chunk) => {
           rawData += chunk;
         });
         res.on('end', () => {
-          assert.equal(rawData, 'hello');
           server.close();
+          assert.equal(rawData, 'hello');
           done();
         });
       });

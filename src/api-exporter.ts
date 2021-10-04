@@ -1,14 +1,20 @@
 import type { OpenAPIObject, PathItemObject } from 'openapi3-ts';
-import { RouteContainer } from './route-builder';
+import { Router } from './router';
 
-export function generateOpenAPI(routes: RouteContainer): OpenAPIObject {
+/**
+ * Export OpenAPI doc of given router.
+ *
+ * @param router the router to export.
+ * @returns the OpenAPI doc.
+ */
+export function exportOpenAPI(router: Router): OpenAPIObject {
   return {
     openapi: '3.0.0',
     info: {
       title: 'Sample',
       version: '0.0.1',
     },
-    paths: routes.getRoutes().reduce((paths, r) => {
+    paths: router.routes.reduce((paths, r) => {
       if (!paths[r.path]) {
         paths[r.path] = {};
       }
