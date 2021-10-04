@@ -1,8 +1,7 @@
 import Koa from 'koa';
 import http from 'http';
 import assert from 'assert';
-import { defineMiddleware } from '../src/middleware';
-import { defineRouter } from '../src/router';
+import { defineMiddleware, defineRouter } from '../src/index';
 
 describe('koa-router', function () {
   it('should greet without errors', function (done) {

@@ -1,6 +1,5 @@
 import assert from 'assert';
-import { exportOpenAPI } from '../src/api-exporter';
-import { defineRouter } from '../src/router';
+import { defineRouter, exportOpenAPI } from '../src/index';
 
 describe('api-exporter', () => {
   it('should export multiple routes in OpenAPI doc', () => {
