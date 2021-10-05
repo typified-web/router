@@ -10,6 +10,7 @@ export type Method = 'GET' | 'PUT' | 'POST' | 'PATCH' | 'DELETE' | 'OPTIONS';
  * The schema of a route.
  */
 export interface RouteSchema<I, IH extends Record<string, unknown>, O extends Output> {
+  summary?: string;
   method?: Method | Method[];
   path: string;
   input: InputSchema<Input<I, IH>>;

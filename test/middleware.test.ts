@@ -10,6 +10,7 @@ describe('koa-router', function () {
     app.use(
       defineMiddleware(
         defineRouter((define) => ({
+          title: 'Sample',
           routes: [
             define.route({
               method: 'GET',

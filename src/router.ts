@@ -5,6 +5,8 @@ import * as route from './schema/route-definer';
  * The router definition.
  */
 export interface Router {
+  title: string,
+  version?: string,
   routes: Route[];
 }
 

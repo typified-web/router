@@ -5,8 +5,10 @@ describe('api-exporter', () => {
   it('should export multiple routes in OpenAPI doc', () => {
     const doc = exportOpenAPI(
       defineRouter((define) => ({
+        title: 'Sample',
         routes: [
           define.route({
+            summary: 'sample path 1',
             method: 'GET',
             path: '/',
             input: define.input((types) => ({
@@ -31,6 +33,7 @@ describe('api-exporter', () => {
             };
           }),
           define.route({
+            summary: 'sample path 2',
             method: 'POST',
             path: '/',
             input: define.input((types) => ({
@@ -65,14 +68,14 @@ describe('api-exporter', () => {
         paths: {
           '/': {
             GET: {
-              summary: 'sample path',
+              summary: 'sample path 1',
               requestBody: { content: { 'application/json': { schema: { type: 'boolean' } } } },
               responses: {
                 200: { content: { 'application/json': { schema: { type: 'string' } } } },
               },
             },
             POST: {
-              summary: 'sample path',
+              summary: 'sample path 2',
               requestBody: { content: { 'application/json': { schema: { type: 'boolean' } } } },
               responses: {
                 200: { content: { 'application/json': { schema: { type: 'string' } } } },
@@ -88,8 +91,10 @@ describe('api-exporter', () => {
   it('should export multiple responses in OpenAPI doc', () => {
     const doc = exportOpenAPI(
       defineRouter((define) => ({
+        title: 'Sample',
         routes: [
           define.route({
+            summary: 'sample path 3',
             method: 'GET',
             path: '/',
             input: define.input((types) => ({
@@ -133,7 +138,7 @@ describe('api-exporter', () => {
         paths: {
           '/': {
             GET: {
-              summary: 'sample path',
+              summary: 'sample path 3',
               requestBody: { content: { 'application/json': { schema: { type: 'boolean' } } } },
               responses: {
                 200: { content: { 'application/json': { schema: { type: 'string' } } } },

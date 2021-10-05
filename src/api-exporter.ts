@@ -11,8 +11,8 @@ export function exportOpenAPI(router: Router): OpenAPIObject {
   return {
     openapi: '3.0.0',
     info: {
-      title: 'Sample',
-      version: '0.0.1',
+      title: router.title,
+      version: router.version ?? '0.0.1',
     },
     paths: router.routes.reduce((paths, r) => {
       if (!paths[r.path]) {
@@ -24,7 +24,7 @@ export function exportOpenAPI(router: Router): OpenAPIObject {
           throw new Error(`duplicated route on ${r.path} with method ${m}`);
         }
         pathObj[m] = {
-          summary: 'sample path',
+          summary: r.summary ?? '',
           requestBody: {
             content: {
               'application/json': {
