@@ -1,3 +1,9 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [0.0.2](https://github.com/typified-web/request/compare/v0.0.2-0...v0.0.2) (2021-10-05)
+
 ## [0.0.2-0](https://github.com/typified-web/request/compare/c6af0d282cb0e074139a889644921fb0ecd30aaf...v0.0.2-0) (2021-10-05)
 
 
@@ -11,6 +17,3 @@
 * initial skeleton of API export. ([d187a8d](https://github.com/typified-web/request/commit/d187a8d768b767ca6578df686b41211a611167f5))
 * initial skeleton of route schema. ([c6af0d2](https://github.com/typified-web/request/commit/c6af0d282cb0e074139a889644921fb0ecd30aaf))
 * support multiple output definition. ([29fd825](https://github.com/typified-web/request/commit/29fd82565bce660ab915a04c7c70c182c322f567))
-
-
-
