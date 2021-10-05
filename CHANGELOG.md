@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/typified-web/request/compare/v0.0.2...v0.0.3) (2021-10-05)
+
 ### [0.0.2](https://github.com/typified-web/request/compare/v0.0.2-0...v0.0.2) (2021-10-05)
 
 ## [0.0.2-0](https://github.com/typified-web/request/compare/c6af0d282cb0e074139a889644921fb0ecd30aaf...v0.0.2-0) (2021-10-05)
