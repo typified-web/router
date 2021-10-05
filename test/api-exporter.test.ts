@@ -16,7 +16,6 @@ describe('api-exporter', () => {
               body: types.boolean(),
             })),
             output: define.output((types) => ({
-              status: 200,
               header: types.object({
                 a: types.number(),
               }),

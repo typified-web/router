@@ -16,7 +16,6 @@ describe('koa-router', function () {
               path: '/',
               input: define.input((types) => ({
                 header: types.object({}),
-                body: types.nil(),
               })),
               output: define.output((types) => ({
                 status: 200,

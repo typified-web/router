@@ -19,8 +19,8 @@ const router = defineRouter((define) => ({
   routes: [
     define.route({
       method: 'GET',
-      input: define.input.body((types) => types.string()),
-      output: define.output.body((types) => types.string()),
+      input: define.input((types) => ({ body: types.string() })),
+      output: define.output((types) => ({ body: types.string() })),
     }})((ctx) => {
       return {
         status: 200,
