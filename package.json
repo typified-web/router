@@ -1,6 +1,6 @@
 {
   "name": "@typified-web/router",
-  "version": "0.0.1-alpha.4",
+  "version": "0.0.2-0",
   "description": "A type-safe wrapper over koa router with focus on maintenance and consistence.",
   "module": "./dist/index.esm.js",
   "main": "./dist/index.common.js",
