@@ -1,4 +1,4 @@
-## 0.0.1-alpha.4 (2021-10-05)
+## [0.0.2-0](https://github.com/typified-web/request/compare/c6af0d282cb0e074139a889644921fb0ecd30aaf...v0.0.2-0) (2021-10-05)
 
 
 ### Features
